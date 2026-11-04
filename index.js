@@ -2,12 +2,8 @@ const mineflayer = require('mineflayer');
 const express = require('express');
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Bot is online!');
-});
-app.listen(process.env.PORT || 3000, () => {
-  console.log('Web server is running.');
-});
+app.get('/', (req, res) => res.send('Bot is online!'));
+app.listen(process.env.PORT || 3000, () => console.log('Web server is running.'));
 
 const botArgs = {
   host: 'hatake.progamer.me', 
@@ -19,23 +15,19 @@ const botArgs = {
 function startBot() {
   const bot = mineflayer.createBot(botArgs);
   
-  // Triggers automatically right when connection stabilizes
   bot.on('spawn', () => {
-    console.log(`[BOT] Connected and spawned into world as ${bot.username}`);
+    console.log(`[BOT] Spawned into world.`);
     
-    // Sends chat registration/login strings immediately
+    // 5-second delay to clear anti-cheat lag spikes
     setTimeout(() => {
-        bot.chat('/register KeepServerAlive123! KeepServerAlive123!');
-        bot.chat('/login KeepServerAlive123!');
-        console.log(`[BOT] Sent authentication commands to chat.`);
-    }, 2000);
+        // Sends both commands to ensure it hits registration or login state cleanly
+        bot.chat('/register Alive247Bot! Alive247Bot!');
+        bot.chat('/login Alive247Bot!');
+        console.log(`[BOT] Authentication payload sent.`);
+    }, 5000);
   });
   
-  bot.on('end', () => {
-    console.log('[BOT] Disconnected! Reconnecting in 30 seconds...');
-    setTimeout(startBot, 30000);
-  });
-  
+  bot.on('end', () => setTimeout(startBot, 30000)); 
   bot.on('error', (err) => console.log('[BOT] Error: ', err));
 }
 startBot();
