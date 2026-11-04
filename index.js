@@ -10,16 +10,32 @@ app.listen(process.env.PORT || 3000, () => {
 });
 
 const botArgs = {
-  host: 'hatake.progamer.me', // Your custom server IP
-  port: 34542,                // Your custom port number
+  host: 'hatake.progamer.me', 
+  port: 34542,                
   username: 'ServerKeeper247',  
   version: false                
 };
 
 function startBot() {
   const bot = mineflayer.createBot(botArgs);
-  bot.on('login', () => console.log(`[BOT] Connected as ${bot.username}`));
-  bot.on('end', () => setTimeout(startBot, 30000)); 
+  
+  // Triggers automatically right when connection stabilizes
+  bot.on('spawn', () => {
+    console.log(`[BOT] Connected and spawned into world as ${bot.username}`);
+    
+    // Sends chat registration/login strings immediately
+    setTimeout(() => {
+        bot.chat('/register KeepServerAlive123! KeepServerAlive123!');
+        bot.chat('/login KeepServerAlive123!');
+        console.log(`[BOT] Sent authentication commands to chat.`);
+    }, 2000);
+  });
+  
+  bot.on('end', () => {
+    console.log('[BOT] Disconnected! Reconnecting in 30 seconds...');
+    setTimeout(startBot, 30000);
+  });
+  
   bot.on('error', (err) => console.log('[BOT] Error: ', err));
 }
 startBot();
